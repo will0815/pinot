@@ -17,6 +17,7 @@ package com.linkedin.pinot.core.realtime.impl;
 
 import com.clearspring.analytics.stream.membership.BloomFilter;
 import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
 import com.linkedin.pinot.common.metrics.ServerMeter;
 import com.linkedin.pinot.common.metrics.ServerMetrics;
 import java.io.IOException;
@@ -241,6 +242,8 @@ public class RealtimeSegmentImpl implements RealtimeSegment {
       Object keyValue = row.getValue(keyColumn);
       if (keyValue instanceof Integer) {
         bloomFilter.add(Ints.toByteArray((Integer) keyValue));
+      } else if (keyValue instanceof Long) {
+        bloomFilter.add(Longs.toByteArray((Long) keyValue));
       } else {
         // TODO jfim: Add other types
         throw new RuntimeException("Unimplemented!");

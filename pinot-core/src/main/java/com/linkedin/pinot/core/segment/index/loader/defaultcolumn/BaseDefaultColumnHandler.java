@@ -17,6 +17,7 @@ package com.linkedin.pinot.core.segment.index.loader.defaultcolumn;
 
 import com.linkedin.pinot.common.data.FieldSpec;
 import com.linkedin.pinot.common.data.Schema;
+import com.linkedin.pinot.core.realtime.impl.kafka.Blah;
 import com.linkedin.pinot.core.segment.creator.ColumnIndexCreationInfo;
 import com.linkedin.pinot.core.segment.creator.ForwardIndexType;
 import com.linkedin.pinot.core.segment.creator.InvertedIndexType;
@@ -350,7 +351,7 @@ public abstract class BaseDefaultColumnHandler implements DefaultColumnHandler {
     SegmentColumnarIndexCreator.addColumnMetadataInfo(segmentProperties, column, columnIndexCreationInfo, totalDocs,
         totalRawDocs, totalAggDocs, fieldSpec, true/*hasDictionary*/, dictionaryElementSize, true/*hasInvertedIndex*/,
         null/*hllOriginColumn*/,
-        column.equals("key") // TODO jfim: Pass this properly
+        column.equals(Blah.KEY_COLUMN_NAME) // TODO jfim: Pass this properly
     );
   }
 }

@@ -226,7 +226,10 @@ public class PinotTableIdealStateBuilder {
         PinotTableIdealStateBuilder.class.getSimpleName() + "-" + kafkaMetadata.getKafkaTopicName(), KAFKA_CONNECTION_TIMEOUT_MILLIS);
 
     try {
-      return consumerWrapper.getPartitionCount(kafkaMetadata.getKafkaTopicName(), /*maxWaitTimeMs=*/5000L);
+      int partitionCount =
+          consumerWrapper.getPartitionCount(kafkaMetadata.getKafkaTopicName(), /*maxWaitTimeMs=*/5000L);
+      // HACK jfim Cap the partition count for benchmarking
+      return Math.min(partitionCount, 8);
     } finally {
       IOUtils.closeQuietly(consumerWrapper);
     }
