@@ -229,7 +229,7 @@ public class PinotTableIdealStateBuilder {
       int partitionCount =
           consumerWrapper.getPartitionCount(kafkaMetadata.getKafkaTopicName(), /*maxWaitTimeMs=*/5000L);
       // HACK jfim Cap the partition count for benchmarking
-      return Math.min(partitionCount, 8);
+      return Math.min(partitionCount, 16);
     } finally {
       IOUtils.closeQuietly(consumerWrapper);
     }

@@ -18,6 +18,8 @@ package com.linkedin.pinot.core.data.manager.realtime;
 
 import com.linkedin.pinot.core.data.filter.DictionaryGenericRowFilter;
 import com.linkedin.pinot.core.data.filter.GenericRowFilter;
+import com.linkedin.pinot.core.data.filter.KeepAllGenericRowFilter;
+import com.linkedin.pinot.core.realtime.impl.kafka.Blah;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -828,7 +830,12 @@ public class LLRealtimeSegmentDataManager extends SegmentDataManager {
 
     String keyColumn = indexingConfig.getKeyColumn();
     if (keyColumn != null && !keyColumn.isEmpty() && _realtimeSegment.hasDictionary(keyColumn)) {
-      _rowFilter = new DictionaryGenericRowFilter(keyColumn, _realtimeSegment.getDataSource(keyColumn).getDictionary(), _segmentName, realtimeTableDataManager);
+      // HACK jfim Fix this.
+      if (Blah.ENABLE_ROW_DEDUPE) {
+        _rowFilter = new DictionaryGenericRowFilter(keyColumn, _realtimeSegment.getDataSource(keyColumn).getDictionary(), _segmentName, realtimeTableDataManager, schema.getTimeColumnName());
+      } else {
+        _rowFilter = new KeepAllGenericRowFilter();
+      }
     } else {
       _rowFilter = null;
     }
