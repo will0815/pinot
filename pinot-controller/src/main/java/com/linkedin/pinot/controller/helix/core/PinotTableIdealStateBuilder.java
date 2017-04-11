@@ -15,18 +15,6 @@
  */
 package com.linkedin.pinot.controller.helix.core;
 
-import com.linkedin.pinot.core.realtime.impl.kafka.KafkaLowLevelStreamProviderConfig;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.apache.commons.compress.utils.IOUtils;
-import org.apache.helix.HelixAdmin;
-import org.apache.helix.ZNRecord;
-import org.apache.helix.model.IdealState;
-import org.apache.helix.model.builder.CustomModeISBuilder;
-import org.apache.helix.store.zk.ZkHelixPropertyStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.linkedin.pinot.common.config.AbstractTableConfig;
 import com.linkedin.pinot.common.metadata.ZKMetadataProvider;
 import com.linkedin.pinot.common.metadata.instance.InstanceZKMetadata;
@@ -38,6 +26,17 @@ import com.linkedin.pinot.common.utils.StringUtil;
 import com.linkedin.pinot.controller.helix.core.realtime.PinotLLCRealtimeSegmentManager;
 import com.linkedin.pinot.core.realtime.impl.kafka.KafkaSimpleConsumerFactoryImpl;
 import com.linkedin.pinot.core.realtime.impl.kafka.SimpleConsumerWrapper;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.helix.HelixAdmin;
+import org.apache.helix.ZNRecord;
+import org.apache.helix.model.IdealState;
+import org.apache.helix.model.builder.CustomModeISBuilder;
+import org.apache.helix.store.zk.ZkHelixPropertyStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -198,7 +197,8 @@ public class PinotTableIdealStateBuilder {
     try {
       nReplicas = Integer.valueOf(replicasPerPartitionStr);
     } catch (NumberFormatException e) {
-      throw new RuntimeException("Invalid value for replicasPerPartition, expected a number: " + replicasPerPartitionStr, e);
+      throw new PinotHelixResourceManager.InvalidTableConfigException(
+          "Invalid value for replicasPerPartition, expected a number: " + replicasPerPartitionStr, e);
     }
     if (idealState == null) {
       idealState = buildEmptyKafkaConsumerRealtimeIdealStateFor(realtimeTableName, nReplicas);
@@ -210,7 +210,6 @@ public class PinotTableIdealStateBuilder {
     final PinotLLCRealtimeSegmentManager segmentManager = PinotLLCRealtimeSegmentManager.getInstance();
     final int nPartitions = getPartitionCount(kafkaMetadata);
     LOGGER.info("Assigning {} partitions to instances for simple consumer for table {}", nPartitions, realtimeTableName);
-
     segmentManager.setupHelixEntries(topicName, realtimeTableName, nPartitions, realtimeInstances, nReplicas,
         kafkaMetadata.getKafkaConsumerProperties().get(Helix.DataSource.Realtime.Kafka.AUTO_OFFSET_RESET), kafkaMetadata.getBootstrapHosts(),
         idealState, create, PinotLLCRealtimeSegmentManager.getRealtimeTableFlushSize(realtimeTableConfig));
